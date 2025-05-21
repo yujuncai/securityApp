@@ -18,25 +18,26 @@ server:
 spring:
   profiles:
     active: local
-  datasource:
-    hikari:
-      minimum-idle: 3
-      maximum-pool-size: 10
-      connection-timeout: 30000
-      idle-timeout: 600000
-      validation-timeout: 40000
-    sql-script-encoding: UTF-8
-    initialization-mode: always
+#  datasource:
+#    hikari:
+#      minimum-idle: 3
+#      maximum-pool-size: 10
+#      connection-timeout: 30000
+#      idle-timeout: 600000
+#      validation-timeout: 40000
+#    sql-script-encoding: UTF-8
+#    initialization-mode: always
   jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: validate
+#    show-sql: true # Reactive Hibernate uses different logging for SQL
+#    hibernate:
+#      ddl-auto: validate # Keep this under properties for Hibernate Reactive
     properties:
-      hibernate.show_sql: true
-      hibernate.use_sql_comments: true
-      hibernate.format_sql: true
-      hibernate.query.in_clause_parameter_padding: true
-    open-in-view: false
+#      hibernate.show_sql: true
+#      hibernate.use_sql_comments: true
+#      hibernate.format_sql: true
+#      hibernate.query.in_clause_parameter_padding: true
+      hibernate.hbm2ddl.auto: validate # For Hibernate Reactive
+#    open-in-view: false # Not applicable for WebFlux
   jackson:
     default-property-inclusion: non_empty
     serialization:
@@ -48,11 +49,17 @@ spring:
   config:
     activate:
       on-profile: local
-  datasource:
-    url: jdbc:mysql://localhost:3306/TestDB?useUnicode=yes&characterEncoding=UTF-8
+  # spring.datasource properties are for JDBC, replaced by spring.r2dbc for reactive
+  # datasource:
+  #   url: jdbc:mysql://localhost:3306/TestDB?useUnicode=yes&characterEncoding=UTF-8
+  #   username: root
+  #   password: root
+  #   driver-class-name: com.mysql.cj.jdbc.Driver
+  r2dbc:
+    url: r2dbc:mysql://localhost:3306/TestDB?useUnicode=yes&characterEncoding=UTF-8
     username: root
     password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    # For R2DBC, connection factory is auto-configured based on the driver on classpath (dev.miku:r2dbc-mysql)
   redis:
     host: localhost
     port: 63799

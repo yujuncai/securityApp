@@ -10,9 +10,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+// import org.springframework.data.domain.Pageable; // No longer used directly in method return types, but PageRequest is
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +24,11 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.WebSession;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
+// import reactor.core.scheduler.Schedulers; // No longer needed
 
 import java.io.File;
 import java.time.Duration;
-import java.util.List;
+// import java.util.List; // No longer returning Mono<List<User>>
 
 @RestController
 @RequestMapping(path = "/mysql", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -42,22 +41,18 @@ public class SqlController {
 
     @PostMapping(path = "/page", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Page<User>> page(@RequestBody @Valid UserParam userParam) {
+    public Flux<User> page(@RequestBody @Valid UserParam userParam) {
 
-        PageRequest pageRequest = PageRequest.of(0, 10);
+        PageRequest pageRequest = PageRequest.of(0, 10); // Assuming UserParam doesn't carry page/size or using defaults
 
-
-        return Mono.defer(() -> Mono.just(userRepository.findByNameLike(userParam.getUserId(), pageRequest)))
-                .subscribeOn(Schedulers.boundedElastic());
+        return userRepository.findByNameLike(userParam.getUserId(), pageRequest);
     }
 
     @PostMapping(path = "/list", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<List<User>> list(@RequestBody @Valid UserParam userParam) {
+    public Flux<User> list(@RequestBody @Valid UserParam userParam) {
 
-
-        return Mono.defer(() -> Mono.just(userRepository.findEntity(userParam.getUserId())))
-                .subscribeOn(Schedulers.boundedElastic());
+        return userRepository.findEntity(userParam.getUserId());
     }
 
     @PostMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
