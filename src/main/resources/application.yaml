@@ -1,0 +1,80 @@
+logging:
+  level:
+    root: INFO
+    org.springframework.web.reactive.function.client.ExchangeFunctions: INFO
+    org.hibernate.type.descriptor.sql: INFO
+  file:
+    path: target/logs
+
+server:
+  port: 8088
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+
+
+
+spring:
+  profiles:
+    active: local
+  datasource:
+    hikari:
+      minimum-idle: 3
+      maximum-pool-size: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      validation-timeout: 40000
+    sql-script-encoding: UTF-8
+    initialization-mode: always
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.show_sql: true
+      hibernate.use_sql_comments: true
+      hibernate.format_sql: true
+      hibernate.query.in_clause_parameter_padding: true
+    open-in-view: false
+  jackson:
+    default-property-inclusion: non_empty
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+#local
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:mysql://localhost:3306/TestDB?useUnicode=yes&characterEncoding=UTF-8
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: localhost
+    port: 63799
+    #password: redis12&*
+    lettuce:
+      pool:
+        min-idle: 2
+        max-idle: 5
+        max-active: 10
+  session:
+    store-type: redis
+    redis:
+      flush-mode: immediate
+
+
+
+
+
+dify:
+  url: http://localhost:8080 # Please replace with the actual Dify service address
+  server:
+    email: admin@admin.com # Please replace the actual Dify service mailbox, if you do not need to call the server-related interfaces can not be filled in!
+    password: admin123456 # Please replace the password with the actual Dify service password, if you don't need to call the server-related interfaces can not be filled in!
+  dataset:
+    api-key: dataset-aaabbbcccdddeeefffggghhh # Please replace with the actual Dify dataset API key, if you don't need to call the dataset-related interfaces can not be filled in!
